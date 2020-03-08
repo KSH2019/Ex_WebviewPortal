@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void doLoginToBB(final String username, final String password) {
         final WebView loginWebview = findViewById(R.id.loginWebview);
+        final WebView loginWebview2 = findViewById(R.id.loginWebview2);
 
         WebSettings loginWebSettings = loginWebview.getSettings();
         loginWebSettings.setJavaScriptEnabled(true);
@@ -78,6 +79,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 String curURL = loginWebview.getUrl();
 
+                if (curURL.contains("https://kulms.korea.ac.kr") && !curURL.contains("ultra")) {
+                    view.loadUrl("javascript:(function() { " +
+                            "document.getElementsByTagName(\"button\")[0].click();" +
+                            "})()");
+                }
+
                 if (curURL.equals("https://sso.korea.ac.kr/saml/Auth.do")) {
                     view.loadUrl("javascript:(function() { " +
                             "document.getElementById('one_id').value = '" + username + "';" +
@@ -85,6 +92,31 @@ public class LoginActivity extends AppCompatActivity {
                             "document.querySelector('div.form-button > div:not(hidden) > button').click();" +
                             "})()");
                 }
+
+                if (curURL.contains("https://kulms.korea.ac.kr/ultra")) {
+                    loginWebview2.loadUrl("https://kulms.korea.ac.kr");
+
+                    Log.d("BBLogin", "Successful");
+                }
+
+                Log.d(TAG, curURL);
+            }
+        });
+
+
+
+        WebSettings loginWeb2Settings = loginWebview2.getSettings();
+        loginWeb2Settings.setJavaScriptEnabled(true);
+        loginWeb2Settings.setDomStorageEnabled(true);
+
+        loginWebview2.addJavascriptInterface(new MyJavascriptInterface(), "Android");
+
+        loginWebview2.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                String curURL = loginWebview2.getUrl();
 
                 Log.d(TAG, curURL);
             }
